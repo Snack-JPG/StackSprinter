@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./cli/*"],
+      "@/templates/*": ["./cli/templates/*"]
+    }
+  },
+  "include": [
+    "cli/**/*",
+    "mcp/**/*",
+    "scripts/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "app/**/*",
+    "cli/templates/**/*"
+  ]
+}

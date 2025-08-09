@@ -1,0 +1,190 @@
+{
+  "name": "stacksprinter-mcp",
+  "version": "1.0.0",
+  "description": "StackSprinter MCP Server - Safe database and deployment operations",
+  "server": {
+    "command": "tsx",
+    "args": ["mcp/tools.ts"],
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
+  "tools": [
+    {
+      "name": "db_list_tables",
+      "description": "List all tables in the Supabase database",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_ref": {
+            "type": "string",
+            "description": "Supabase project reference ID"
+          }
+        },
+        "required": ["project_ref"]
+      }
+    },
+    {
+      "name": "db_query_safe",
+      "description": "Execute a safe read-only query on the database",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_ref": {
+            "type": "string",
+            "description": "Supabase project reference ID"
+          },
+          "query": {
+            "type": "string",
+            "description": "SQL query to execute (SELECT only)"
+          },
+          "limit": {
+            "type": "number",
+            "description": "Maximum number of rows to return",
+            "default": 100,
+            "maximum": 1000
+          }
+        },
+        "required": ["project_ref", "query"]
+      }
+    },
+    {
+      "name": "db_run_migration",
+      "description": "Run a database migration (requires ALLOW_WRITE=true)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_ref": {
+            "type": "string",
+            "description": "Supabase project reference ID"
+          },
+          "migration_file": {
+            "type": "string",
+            "description": "Path to migration file"
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Confirmation that you want to run the migration"
+          }
+        },
+        "required": ["project_ref", "migration_file", "confirm"]
+      }
+    },
+    {
+      "name": "db_seed_demo",
+      "description": "Seed the database with demo data (requires ALLOW_WRITE=true)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_ref": {
+            "type": "string",
+            "description": "Supabase project reference ID"
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Confirmation that you want to seed data"
+          }
+        },
+        "required": ["project_ref", "confirm"]
+      }
+    },
+    {
+      "name": "vercel_env_set",
+      "description": "Set environment variables on Vercel project (requires ALLOW_WRITE=true)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "project_name": {
+            "type": "string",
+            "description": "Vercel project name"
+          },
+          "env_vars": {
+            "type": "object",
+            "description": "Environment variables to set",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "environment": {
+            "type": "string",
+            "enum": ["production", "preview", "development"],
+            "default": "production",
+            "description": "Target environment"
+          }
+        },
+        "required": ["project_name", "env_vars"]
+      }
+    },
+    {
+      "name": "repo_open_pr",
+      "description": "Open a pull request on the GitHub repository (requires ALLOW_WRITE=true)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "Repository owner"
+          },
+          "repo": {
+            "type": "string",
+            "description": "Repository name"
+          },
+          "title": {
+            "type": "string",
+            "description": "Pull request title"
+          },
+          "body": {
+            "type": "string",
+            "description": "Pull request body"
+          },
+          "head": {
+            "type": "string",
+            "description": "Head branch name"
+          },
+          "base": {
+            "type": "string",
+            "default": "main",
+            "description": "Base branch name"
+          }
+        },
+        "required": ["owner", "repo", "title", "body", "head"]
+      }
+    },
+    {
+      "name": "get_deployment_status",
+      "description": "Get the status of a StackSprinter deployment",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "app_name": {
+            "type": "string",
+            "description": "StackSprinter app name"
+          }
+        },
+        "required": ["app_name"]
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "stacksprinter://logs",
+      "name": "StackSprinter Logs",
+      "description": "Access to StackSprinter operation logs"
+    },
+    {
+      "uri": "stacksprinter://state/{app_name}",
+      "name": "App State",
+      "description": "Access to StackSprinter app state files"
+    }
+  ],
+  "capabilities": {
+    "logging": {
+      "level": "info"
+    },
+    "tools": {
+      "read_filesystem": true,
+      "write_filesystem": false,
+      "network_access": true
+    }
+  }
+}

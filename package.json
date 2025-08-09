@@ -1,0 +1,42 @@
+{
+  "name": "stacksprinter",
+  "version": "1.0.0",
+  "description": "One-click Supabase → GitHub → Vercel launcher for Next.js apps",
+  "main": "cli/stacksprinter.ts",
+  "type": "module",
+  "bin": {
+    "stacksprinter": "./cli/stacksprinter.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "dev": "tsx cli/stacksprinter.ts",
+    "install-global": "./scripts/install.sh",
+    "verify": "./scripts/verify.sh",
+    "mcp": "tsx mcp/tools.ts"
+  },
+  "keywords": [
+    "nextjs",
+    "supabase",
+    "vercel",
+    "github",
+    "starter",
+    "cli",
+    "mcp"
+  ],
+  "author": "StackSprinter",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^20.10.0",
+    "commander": "^11.1.0",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/commander": "^2.12.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0"
+}
