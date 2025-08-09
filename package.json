@@ -8,11 +8,14 @@
     "stacksprinter": "./cli/stacksprinter.ts"
   },
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsc --noEmit && node scripts/build-mcp.cjs",
     "dev": "tsx cli/stacksprinter.ts",
     "install-global": "./scripts/install.sh",
     "verify": "./scripts/verify.sh",
-    "mcp": "tsx mcp/tools.ts"
+    "doctor": "./scripts/doctor.sh",
+    "mcp": "node mcp/tools.cjs",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"Tests coming soon\" && exit 0"
   },
   "keywords": [
     "nextjs",
@@ -21,7 +24,10 @@
     "github",
     "starter",
     "cli",
-    "mcp"
+    "mcp",
+    "full-stack",
+    "deployment",
+    "typescript"
   ],
   "author": "StackSprinter",
   "license": "MIT",
@@ -38,5 +44,13 @@
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
   },
-  "packageManager": "pnpm@8.15.0"
+  "packageManager": "pnpm@8.15.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Snack-JPG/StackSprinter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Snack-JPG/StackSprinter/issues"
+  },
+  "homepage": "https://github.com/Snack-JPG/StackSprinter#readme"
 }
