@@ -1,0 +1,78 @@
+version: '3.9'
+
+# ArbitrageMarkets - Docker Compose Configuration
+# This file defines the infrastructure for local development and production deployment
+# Includes PostgreSQL for persistent data and Redis for high-speed caching
+
+services:
+  # PostgreSQL 15 - Primary Database
+  # Stores market data, matched pairs, opportunities, and user information
+  postgres:
+    image: postgres:15-alpine
+    container_name: arbitrage-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      # Database credentials - CHANGE IN PRODUCTION
+      POSTGRES_DB: arbitrage_markets
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      # Performance tuning
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=en_US.UTF-8"
+    volumes:
+      # Persist database data across container restarts
+      - postgres_data:/var/lib/postgresql/data
+      # Custom initialization scripts (optional)
+      - ./backend/prisma/seed:/docker-entrypoint-initdb.d
+    healthcheck:
+      # Ensure database is ready before dependent services start
+      test: ["CMD-SHELL", "pg_isready -U postgres -d arbitrage_markets"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - arbitrage_network
+
+  # Redis 7 - Cache Layer
+  # Caches market data (30-60s TTL) to reduce API calls and improve response times
+  redis:
+    image: redis:7-alpine
+    container_name: arbitrage-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: >
+      redis-server
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save 60 1
+      --loglevel warning
+    volumes:
+      # Optional: Persist Redis data for faster cold starts
+      - redis_data:/data
+    healthcheck:
+      # Verify Redis is accepting connections
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    networks:
+      - arbitrage_network
+
+# Named volumes for data persistence
+volumes:
+  postgres_data:
+    driver: local
+    name: arbitrage_postgres_data
+  redis_data:
+    driver: local
+    name: arbitrage_redis_data
+
+# Custom bridge network for service-to-service communication
+networks:
+  arbitrage_network:
+    driver: bridge
+    name: arbitrage_network

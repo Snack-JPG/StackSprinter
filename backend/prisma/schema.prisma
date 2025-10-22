@@ -1,0 +1,116 @@
+// ArbitrageMarkets - Prisma Schema
+// Database schema for real-time arbitrage detection between prediction markets
+// Provides type-safe database access with automatic migrations
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Markets table - stores all market data from Kalshi and Polymarket
+model Market {
+  id                   String         @id @default(cuid())
+  platform             String         // 'kalshi' or 'polymarket'
+  marketId             String         // Platform's native market ID
+  title                String
+  description          String?        @db.Text
+  yesPrice             Float          // Current YES price (0-1 or 0-100 depending on platform)
+  noPrice              Float          // Current NO price
+  volume               Float          @default(0)
+  closeDate            DateTime?      // When market closes/expires
+  resolutionCriteria   String?        @db.Text
+  lastUpdated          DateTime       @default(now()) @updatedAt
+  createdAt            DateTime       @default(now())
+
+  // Relations
+  kalshiMatches        MatchedPair[]  @relation("KalshiMarket")
+  polymarketMatches    MatchedPair[]  @relation("PolymarketMarket")
+
+  // Indexes for performance
+  @@unique([platform, marketId], name: "platform_market_unique")
+  @@index([platform])
+  @@index([closeDate])
+  @@index([lastUpdated])
+  @@index([title])
+}
+
+// MatchedPairs table - stores matched markets between platforms
+model MatchedPair {
+  id                   String         @id @default(cuid())
+  kalshiMarketId       String
+  polymarketMarketId   String
+  confidence           Float          // Similarity score (0-1)
+  status               String         @default("active") // active, inactive, archived
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  // Relations
+  kalshiMarket         Market         @relation("KalshiMarket", fields: [kalshiMarketId], references: [id], onDelete: Cascade)
+  polymarketMarket     Market         @relation("PolymarketMarket", fields: [polymarketMarketId], references: [id], onDelete: Cascade)
+  opportunities        Opportunity[]
+
+  // Indexes
+  @@unique([kalshiMarketId, polymarketMarketId], name: "matched_pair_unique")
+  @@index([status])
+  @@index([confidence])
+  @@index([createdAt])
+}
+
+// Opportunities table - detected arbitrage opportunities
+model Opportunity {
+  id                   String         @id @default(cuid())
+  matchedPairId        String
+  kalshiPrice          Float          // Price on Kalshi at detection time
+  polymarketPrice      Float          // Price on Polymarket at detection time
+  spread               Float          // Price difference (absolute)
+  netProfit            Float          // Expected profit after fees (%)
+  riskScore            Float          // Risk assessment (0-1, higher = riskier)
+  detectedAt           DateTime       @default(now())
+
+  // Relations
+  matchedPair          MatchedPair    @relation(fields: [matchedPairId], references: [id], onDelete: Cascade)
+
+  // Indexes for querying profitable opportunities
+  @@index([matchedPairId])
+  @@index([netProfit])
+  @@index([riskScore])
+  @@index([detectedAt])
+  @@index([spread])
+}
+
+// Users table - for future authentication and personalization
+model User {
+  id                   String         @id @default(cuid())
+  email                String         @unique
+  emailVerified        Boolean        @default(false)
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  // Relations
+  alerts               Alert[]
+
+  @@index([email])
+}
+
+// Alerts table - user-configured notifications for opportunities
+model Alert {
+  id                   String         @id @default(cuid())
+  userId               String
+  minProfit            Float          @default(1.0) // Minimum profit % to trigger alert
+  categories           String[]       @default([]) // Market categories to monitor
+  enabled              Boolean        @default(true)
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  // Relations
+  user                 User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Indexes
+  @@index([userId])
+  @@index([enabled])
+  @@index([minProfit])
+}

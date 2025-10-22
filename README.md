@@ -1,374 +1,229 @@
-<div align="center">
+# ArbitrageMarkets - Real-Time Prediction Market Arbitrage Detector
 
-# 🚀 StackSprinter
+**Find profitable arbitrage opportunities between Kalshi and Polymarket in real-time**
 
-**One Command. Full Stack. Zero Friction.**
-
-*Ship a Next.js 14 + Supabase app to Vercel in ~60s with CI, auth, DB, and MCP hooks. MIT-licensed.*
-
-[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
-[![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
 
 ---
 
-</div>
+## 📋 Overview
 
-> **🚨 SECURITY NOTICE**  
-> **Tokens must be least-privilege. We never print secrets. `.env` is git-ignored. Prefer OIDC in CI. See [docs/security.md](docs/security.md).**
+ArbitrageMarkets is a real-time arbitrage detection platform that identifies profitable betting opportunities between two major prediction markets:
 
-## ⚡ Quick Start
+- **Kalshi** - Regulated US prediction market allowing event-based trading
+- **Polymarket** - Crypto-based prediction market with global reach
+
+The platform uses AI-powered semantic matching to find equivalent markets across both platforms, calculates potential arbitrage opportunities, analyzes risks, and sends real-time alerts when profitable opportunities arise.
+
+## ✨ Key Features
+
+### 🎯 Real-Time Opportunity Detection
+- Continuous monitoring of both Kalshi and Polymarket APIs
+- Sub-minute latency for opportunity identification
+- WebSocket connections for instant price updates
+- Configurable profit threshold alerts
+
+### 🤖 AI-Powered Market Matching
+- OpenAI embeddings for semantic market similarity
+- Fuzzy matching to find equivalent events across platforms
+- Automatic market pair discovery and validation
+- Manual override capabilities for edge cases
+
+### 📊 Risk Analysis
+- Different resolution criteria detection
+- Settlement timeline comparison
+- Liquidity analysis on both sides
+- Maximum position size recommendations
+- Historical accuracy tracking
+
+### 🔔 Alert System
+- Real-time browser notifications
+- Email alerts for high-value opportunities
+- Customizable profit threshold filters
+- Alert history and performance tracking
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first styling
+- **WebSocket Client** - Real-time data streaming
+- **Recharts** - Data visualization
+
+### Backend
+- **Express/Fastify** - High-performance Node.js server
+- **TypeScript** - End-to-end type safety
+- **WebSocket Server** - Real-time communication
+- **Node-cron** - Scheduled market polling
+
+### Data Layer
+- **PostgreSQL** - Primary database for structured data
+- **Redis** - Caching layer for market data (30-60s TTL)
+- **OpenAI API** - Text embeddings for market matching
+- **Kalshi API** - Market data from Kalshi
+- **Polymarket API** - Market data from Polymarket
+
+### Infrastructure
+- **Docker** - Containerized deployment
+- **Nginx** - Reverse proxy and load balancing
+- **PM2** - Process management
+- **Vercel** (optional) - Frontend deployment
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
 ```bash
-# Check Node.js version
-node -v  # 18+ required
+# Required
+node -v  # v18+ required
+npm -v   # v9+ required
+docker -v  # For PostgreSQL and Redis
 
-# Install package manager and Vercel CLI
-npm i -g pnpm vercel
-
-# Install platform CLIs (choose your OS)
-# macOS:
-brew install supabase/tap/supabase gh jq
-
-# Linux:
-curl -fsSL https://cli.supabase.com/install | sh
-sudo apt-get install gh jq -y
-
-# Windows:
-winget install supabase.supabase gh jq
+# Install dependencies
+npm install
 ```
 
-### Get Your Tokens (3 minutes)
-- 🔑 [Supabase Access Token](https://supabase.com/dashboard/account/tokens) (org-scoped)
-- 🔑 [Vercel Token](https://vercel.com/account/tokens) (deploy scope)
-- 🔑 [GitHub Token](https://github.com/settings/tokens) (repo scope only)
-
-### Launch Your First App
+### Environment Setup
 
 ```bash
-# Clone and setup
-git clone https://github.com/Snack-JPG/StackSprinter.git
-cd StackSprinter
+# Copy example environment file
 cp .env.example .env
-# ⚠️  Add your tokens to .env - NEVER commit this file
 
-# Install and launch
-pnpm install
-pnpm dlx tsx cli/stacksprinter.ts create \\
-  --app-name "street-alchemy" \\
-  --visibility "public"
-
-# Verify deployment
-./scripts/verify.sh --app-name "street-alchemy"
+# Add your API credentials (see API_GUIDE.md)
+# - KALSHI_API_KEY
+# - KALSHI_API_SECRET
+# - OPENAI_API_KEY
 ```
 
-**Your app is now live!** 🎉
+### Local Development
 
----
+```bash
+# Start infrastructure (PostgreSQL + Redis)
+docker-compose up -d
 
-## 🎯 What You Get
+# Run database migrations
+npm run db:migrate
 
-<table>
-<tr>
-<td width="50%">
+# Start backend server
+npm run dev:backend
 
-### 🎨 **Frontend**
-- **Next.js 14** with App Router
-- **TypeScript** for type safety
-- **Tailwind CSS** for styling
-- **Responsive** layouts
-- **SEO** metadata
+# Start frontend (in separate terminal)
+npm run dev:frontend
 
-</td>
-<td width="50%">
-
-### ⚡ **Backend**
-- **PostgreSQL** via Supabase
-- **Row Level Security** policies
-- **Authentication** scaffolding
-- **Real-time** subscriptions ready
-- **File storage** with CDN
-
-</td>
-</tr>
-<tr>
-<td>
-
-### 🌐 **Deployment**
-- **Vercel** global CDN
-- **Custom domains** supported
-- **SSL certificates** automatic
-- **Environment** variables injected
-- **Vercel Analytics** enabled
-
-</td>
-<td>
-
-### 🔄 **DevOps**
-- **GitHub** repository created
-- **CI/CD** with GitHub Actions
-- **Branch protection** rules
-- **Automated testing** pipeline
-- **Security scanning** included
-
-</td>
-</tr>
-</table>
-
-### ✅ Feature Matrix
-
-| Area | Shipped | Status |
-|------|---------|--------|
-| **Next.js 14** (App Router, TypeScript, Tailwind) | ✅ | Production ready |
-| **Supabase** (PostgreSQL, RLS, auth scaffold, seeding) | ✅ | Production ready |
-| **Vercel** (deployment, env injection, Vercel Analytics) | ✅ | Production ready |
-| **GitHub** (repo creation, basic CI/CD) | ✅ | Production ready |
-| **MCP Server** (read-only DB ops, gated writes) | ✅ | Production ready |
-| **Advanced Monitoring** (Sentry, DataDog) | ❌ | Roadmap |
-| **Multi-cloud** (AWS, Azure) | ❌ | Roadmap |
-
----
-
-## 🤖 Claude MCP Integration
-
-StackSprinter includes a **Model Context Protocol** server for safe AI-powered database management.
-
-### Setup
-```json
-{
-  "mcpServers": {
-    "stacksprinter": {
-      "command": "node",
-      "args": ["./StackSprinter/mcp/tools.cjs"],
-      "env": {
-        "SUPABASE_ACCESS_TOKEN": "your_scoped_token",
-        "ALLOW_WRITE": "false"
-      }
-    }
-  }
-}
+# Access the application
+open http://localhost:3000
 ```
 
-### Capabilities
-- 🔍 **Query database** with natural language
-- 📊 **Analyze data** and generate insights
-- 🛠️ **Run migrations** (with write permissions)
-- 📝 **Create pull requests** for updates
-- 🚀 **Monitor deployments** and health status
-
-### Security Features
-- 🛡️ **Read-only by default** - no accidental writes
-- 🔒 **Write operations gated** behind `ALLOW_WRITE=true`
-- 🚫 **SQL injection prevention** with query validation
-- 🎭 **Secret redaction** in all logs and outputs
-
----
+See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed setup instructions.
 
 ## 🏗️ Architecture
 
-```mermaid
-graph TB
-    A[💡 Your Idea] --> B[🚀 StackSprinter CLI]
-    B --> C[📱 Next.js App]
-    B --> D[🗄️ Supabase DB]
-    B --> E[📚 GitHub Repo]
-    C --> F[🌐 Vercel Deployment]
-    D --> F
-    E --> G[🔄 GitHub Actions]
-    G --> F
-    H[🤖 Claude MCP] --> D
-    H --> E
 ```
-
-## 📊 Performance
-
-In our tests with 50+ deployments:
-- **Typical deployment time**: 45-90 seconds
-- **First-run success rate**: 85%+ (with correct tokens)
-- **Setup reduction**: ~80% fewer manual steps vs traditional setup
-
----
-
-## 🛠️ Advanced Usage
-
-### Regional Deployment
-```bash
-pnpm dlx tsx cli/stacksprinter.ts create \\
-  --app-name "tokyo-app" \\
-  --region "ap-northeast-1" \\
-  --org "global-company"
+┌─────────────────────────────────────────────────────────────┐
+│                      Frontend (Next.js)                     │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │  Dashboard   │  │ Opportunities │  │   Settings   │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
+└────────────────────────────┬────────────────────────────────┘
+                             │ WebSocket + REST
+                             │
+┌────────────────────────────▼────────────────────────────────┐
+│                   Backend (Express/Fastify)                 │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │   API Routes │  │  WebSocket   │  │   Cron Jobs  │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
+│                                                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │Market Fetcher│  │ AI Matcher   │  │ Arbitrage    │     │
+│  │              │  │              │  │ Calculator   │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
+└─────────────┬───────────────────┬─────────────┬────────────┘
+              │                   │             │
+    ┌─────────▼─────────┐  ┌──────▼──────┐  ┌──▼──────┐
+    │   PostgreSQL      │  │    Redis    │  │ OpenAI  │
+    │                   │  │             │  │   API   │
+    │ • markets         │  │ • cache     │  └─────────┘
+    │ • matched_pairs   │  │ • sessions  │
+    │ • opportunities   │  └─────────────┘
+    │ • alerts          │
+    │ • users           │
+    └───────────────────┘
+              │
+    ┌─────────▼──────────┐
+    │  External APIs     │
+    │                    │
+    │  • Kalshi API      │
+    │  • Polymarket API  │
+    └────────────────────┘
 ```
-
-### OIDC Deployment (No Vercel Token Required)
-See [docs/oidc.md](docs/oidc.md) for GitHub Actions OIDC setup.
-
-### Idempotent Operations
-StackSprinter uses `.stacksprinter/state.json` to tag and reuse existing resources. Safe to re-run commands. See [docs/idempotency.md](docs/idempotency.md).
-
----
-
-## 🔧 Troubleshooting
-
-### Quick Health Check
-```bash
-./scripts/doctor.sh  # Checks tools, tokens, and system
-```
-
-<details>
-<summary><strong>🚨 "Command not found" errors</strong></summary>
-
-```bash
-# Install missing tools
-./scripts/install.sh --verbose
-
-# Check environment
-./scripts/doctor.sh
-```
-</details>
-
-<details>
-<summary><strong>🔑 Authentication failures</strong></summary>
-
-```bash
-# Verify authentication
-gh auth status
-vercel whoami
-supabase projects list
-
-# Re-authenticate if needed
-gh auth login
-vercel login
-supabase auth login --token your_token
-```
-</details>
-
-<details>
-<summary><strong>🗄️ Database connection issues</strong></summary>
-
-```bash
-# Test database connectivity
-supabase db query "SELECT 1" --project-ref your_ref
-
-# Check environment variables
-vercel env ls --project your-app
-```
-</details>
-
----
-
-## 🧹 Cleanup
-
-Need to remove a StackSprinter app? See [docs/teardown.md](docs/teardown.md) for complete removal instructions including:
-- Vercel project deletion
-- Supabase project cleanup
-- GitHub repository removal
-- Local file cleanup
-
----
-
-## 🎨 Examples
-
-### Street Alchemy - Creative Collective
-```bash
-pnpm dlx tsx cli/stacksprinter.ts create \\
-  --app-name "street-alchemy" \\
-  --visibility "public" \\
-  --region "us-west-1"
-```
-
-### SaaS MVP - Startup Ready  
-```bash
-pnpm dlx tsx cli/stacksprinter.ts create \\
-  --app-name "saas-mvp" \\
-  --org "my-startup" \\
-  --github-org "my-startup" \\
-  --visibility "private"
-```
-
-### Gaming Leaderboard
-```bash
-pnpm dlx tsx cli/stacksprinter.ts create \\
-  --app-name "pixel-champions" \\
-  --region "us-east-1" \\
-  --visibility "public"
-```
-
----
-
-## 🎯 Roadmap
-
-- [ ] **Multi-cloud** - AWS, Azure, Railway support
-- [ ] **More frameworks** - SvelteKit, Astro, Remix templates
-- [ ] **Advanced monitoring** - Sentry, DataDog integration  
-- [ ] **Team collaboration** - Multi-user project management
-- [ ] **Template marketplace** - Community-driven starters
-
----
-
-## 💰 Costs
-
-StackSprinter uses free tiers by default:
-
-| Service | Free Tier | Typical Upgrade |
-|---------|-----------|-----------------|
-| **Supabase** | 500MB DB, 50MB storage | $25/mo for 8GB |
-| **Vercel** | 100GB bandwidth | $20/mo for 400GB |
-| **GitHub** | Unlimited repos | $4/mo for advanced features |
-| **StackSprinter** | **FREE FOREVER** | ❤️ |
-
-**Total cost to start: $0**
-
----
-
-## 🤝 Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and contribution guidelines.
-
-### Development Setup
-```bash
-git clone https://github.com/Snack-JPG/StackSprinter.git
-cd StackSprinter
-./scripts/install.sh --verbose
-./scripts/doctor.sh
-```
-
----
 
 ## 📚 Documentation
 
-- [🔐 Security](docs/security.md) - Token scopes and security practices
-- [🚀 OIDC Deployment](docs/oidc.md) - GitHub Actions without tokens
-- [🔄 Idempotency](docs/idempotency.md) - How state management works
-- [🧹 Teardown](docs/teardown.md) - Complete cleanup instructions
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Detailed system architecture and design decisions
+- [API_GUIDE.md](API_GUIDE.md) - External API integration guide
+- [DEVELOPMENT.md](DEVELOPMENT.md) - Development setup and contribution guidelines
 
----
+## 🔗 API Reference
+
+### REST Endpoints
+
+```
+GET  /api/opportunities       - List current arbitrage opportunities
+GET  /api/markets/kalshi      - Fetch Kalshi markets
+GET  /api/markets/polymarket  - Fetch Polymarket markets
+GET  /api/matched-pairs       - View matched market pairs
+POST /api/alerts/subscribe    - Subscribe to alerts
+```
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for complete API documentation.
+
+## ⚠️ Disclaimer
+
+**This application is for informational and educational purposes only.**
+
+- **Not Financial Advice**: ArbitrageMarkets does not provide financial, investment, or trading advice. All calculations and opportunities shown are for informational purposes only.
+
+- **Risk Warning**: Arbitrage trading carries significant risks, including:
+  - Different resolution criteria between platforms
+  - Settlement timing differences
+  - Liquidity constraints
+  - Platform-specific fees and limits
+  - Regulatory considerations
+  - Execution risk (prices may change before orders fill)
+
+- **Due Diligence**: Users must conduct their own research and understand the terms, conditions, and resolution criteria of each platform before placing any trades.
+
+- **Regulatory Compliance**: Users are responsible for ensuring compliance with all applicable laws and regulations in their jurisdiction.
+
+- **No Guarantees**: Past performance and detected opportunities do not guarantee future results.
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License
 
-**Built with:**
-[Next.js](https://nextjs.org/) • [Supabase](https://supabase.com/) • [Vercel](https://vercel.com/) • [Tailwind CSS](https://tailwindcss.com/) • [TypeScript](https://typescriptlang.org/)
+Copyright (c) 2025 ArbitrageMarkets
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ---
 
-<div align="center">
-
-**Ready to ship something amazing?**
-
-```bash
-git clone https://github.com/Snack-JPG/StackSprinter.git && cd StackSprinter
-```
-
-⭐ **Star this repo if StackSprinter saved you time!**
-
-[⭐ Star](https://github.com/Snack-JPG/StackSprinter) • [💬 Discussions](https://github.com/Snack-JPG/StackSprinter/discussions) • [🐛 Issues](https://github.com/Snack-JPG/StackSprinter/issues)
-
-*Made with ⚡ by developers, for developers*
-
-</div>
+**Built with:** [Next.js](https://nextjs.org/) • [TypeScript](https://typescriptlang.org/) • [PostgreSQL](https://postgresql.org/) • [Redis](https://redis.io/) • [OpenAI](https://openai.com/)
